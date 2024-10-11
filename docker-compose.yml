@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  app:
+    build:
+      dockerfile: ./docker/Dockerfile
+    container_name: test-app
+    command: bash -c 'symfony server:stop && symfony server:start --port=8000'
+    volumes:
+      - ./app:/app
+      - ../docker/config/php.ini:/usr/local/etc/php/conf.d/local.ini
+    depends_on:
+      - database
+    networks:
+      - test
+
+  database:
+    image: mysql:5.7
+    container_name: test-database
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_PASSWORD: password
+      MYSQL_USER: user
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - test-database-data:/var/lib/mysql:rw
+    networks:
+      - test
+
+volumes:
+  test-database-data:
+
+networks:
+  test:
